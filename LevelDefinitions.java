@@ -72,7 +72,7 @@ public class LevelDefinitions
 				new Signal(SignalType.Input, new SignalLevel[] {
 					SignalLevel.Off, SignalLevel.On, SignalLevel.Off, SignalLevel.On,
 					SignalLevel.Off, SignalLevel.On, SignalLevel.Off, SignalLevel.On
-				}, "C", new Point(75, 320), 25, null),
+				}, "C", new Point(75, 350), 25, null),
 				
 				new Signal(SignalType.Output, new SignalLevel[] {
 					SignalLevel.On, SignalLevel.Off, SignalLevel.On, SignalLevel.Off,
@@ -95,7 +95,7 @@ public class LevelDefinitions
 			});
 
 			Wire wire2 = new Wire(SignalLevel.Undefined, new Point[] {
-				new Point(75, 350), new Point(250, 350)
+				new Point(100, 350), new Point(250, 350)
 			}, new Evaluable[] {
 				signals[2]
 			});
