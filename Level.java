@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 
 public class Level implements Drawable {
@@ -15,9 +16,11 @@ public class Level implements Drawable {
 	private final NotGate toolbarNotGate = new NotGate(new Point(750, 550), null);
 	private int simulationIndex; /* Temporal location in simulation mode. */
 	private int tick; /* Frame counter mod 100. */
-	boolean correct, tempCorrect;
+	private boolean correct, tempCorrect;
+	private Image background;
 
-	public Level(Wire wires[], Slot slots[], Signal signals[], int numAndGates, int numOrGates, int numXorGates, int numNotGates) {
+	public Level(Image background, Wire wires[], Slot slots[], Signal signals[], int numAndGates, int numOrGates, int numXorGates, int numNotGates) {
+		this.background = background;
 		this.wires = wires;
 		this.slots = slots;
 		this.signals = signals;
@@ -30,6 +33,8 @@ public class Level implements Drawable {
 
 	@Override
 	public void draw(Graphics2D g, LevelData ignore0, MouseInfo mouseInfo, LogicGate ignore1) {
+		g.drawImage(background, 0, 0, null);
+
 		if (levelMode == LevelMode.Construction) {
 			LevelData levelData = new LevelData(LevelMode.Construction, 0);
 

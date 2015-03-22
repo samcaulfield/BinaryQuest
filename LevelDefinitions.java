@@ -1,4 +1,8 @@
+import java.awt.Image;
 import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class LevelDefinitions
 {
@@ -7,6 +11,13 @@ public class LevelDefinitions
 	public static Level nextLevel()
 	{
 		Level ret = null;
+		Image backgroundImage = null;
+
+		try {
+			backgroundImage = ImageIO.read(new File("./background.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		switch (level) {
 		case 0:
@@ -36,7 +47,7 @@ public class LevelDefinitions
 				w1
 			});
 
-			ret = new Level(new Wire[] {
+			ret = new Level(backgroundImage, new Wire[] {
 				w0, w1
 			}, new Slot[] {
 				slot
@@ -119,7 +130,7 @@ public class LevelDefinitions
 				slot2
 			});
 
-			ret = new Level(new Wire[] {
+			ret = new Level(backgroundImage, new Wire[] {
 				wire0, wire1, wire2, wire3, wire4, wire5
 			}, new Slot[] {
 				slot0, slot1, slot2
