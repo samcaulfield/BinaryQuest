@@ -12,8 +12,8 @@ public class Level implements Drawable {
 	private LevelMode levelMode;
 	private int signalIndex; /* Index into signal array to display in signal window. */
 	private int timeIndex; /* Index into time array of signals in signal window. */
-	private final AndGate toolbarAndGate = new AndGate(new Point(450, 550), null);
-	private final NotGate toolbarNotGate = new NotGate(new Point(750, 550), null);
+	private final AndGate toolbarAndGate;
+	private final NotGate toolbarNotGate = new NotGate(null, new Point(750, 550), null);
 	private int simulationIndex; /* Temporal location in simulation mode. */
 	private int tick; /* Frame counter mod 100. */
 	private boolean correct, tempCorrect;
@@ -28,7 +28,9 @@ public class Level implements Drawable {
 		this.numOrGates = numOrGates;
 		this.numXorGates = numXorGates;
 		this.numNotGates = numNotGates;
+
 		levelMode = LevelMode.Construction;
+		toolbarAndGate = new AndGate(imageSet.getAnd(), new Point(450, 550), null);
 	}
 
 	@Override
@@ -87,11 +89,11 @@ public class Level implements Drawable {
 						/* toolbar clicks */
 						if (mouseInfo.getX() > 400 && mouseInfo.getX() < 500
 							&& mouseInfo.getY() > 500 && numAndGates > 0) {
-							carrying = new AndGate(new Point(mouseInfo.getX(), mouseInfo.getY()), null);
+							carrying = new AndGate(imageSet.getAnd(), new Point(mouseInfo.getX(), mouseInfo.getY()), null);
 							numAndGates--;
 						} else if (mouseInfo.getX() > 700 && mouseInfo.getY() > 500 && numNotGates > 0) {
 							System.out.println("Picked up NotGate");
-							carrying = new NotGate(new Point(mouseInfo.getX(), mouseInfo.getY()), null);
+							carrying = new NotGate(null, new Point(mouseInfo.getX(), mouseInfo.getY()), null);
 							numNotGates--;
 						} else if (mouseInfo.getX() > 300 && mouseInfo.getX() < 400 && mouseInfo.getY() > 500) {
 							boolean filled = true;

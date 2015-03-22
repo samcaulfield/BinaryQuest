@@ -6,17 +6,22 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ImageSet {
-	private final Image background, toolbar, border, simulate;
+	private final Image background, toolbar, border, simulate, and;
 
-	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl, String simulateUrl) throws IOException {
+	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl, String simulateUrl, String andUrl) throws IOException {
 		background = loadFromUrl(backgroundUrl);
 		toolbar = loadFromUrl(toolbarUrl);
 		border = loadFromUrl(borderUrl);
 		simulate = loadFromUrl(simulateUrl);
+		and = loadFromUrl(andUrl);
 	}
 
 	private Image loadFromUrl(String url) throws IOException {
 		return ImageIO.read(new File(url));
+	}
+
+	public Image getAnd() {
+		return and;
 	}
 
 	public Image getBackground() {

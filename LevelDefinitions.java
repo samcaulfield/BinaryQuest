@@ -14,7 +14,7 @@ public class LevelDefinitions
 
 		ImageSet standardImages = null;
 		try {
-			standardImages = new ImageSet("./background.png", "./toolbar.png", "./border.png", "./simulate.png");
+			standardImages = new ImageSet("./background.png", "./toolbar.png", "./border.png", "./simulate.png", "./and.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

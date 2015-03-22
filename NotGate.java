@@ -1,11 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 
 public class NotGate extends LogicGate {
 
-	public NotGate(Point position, Evaluable inputs[]) {
-		super(position, inputs);
+	public NotGate(Image image, Point position, Evaluable inputs[]) {
+		super(image, position, inputs);
 		minInputs = 1;
 		maxInputs = 1;
 	}

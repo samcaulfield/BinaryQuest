@@ -1,12 +1,15 @@
+import java.awt.Image;
 import java.awt.Point;
 
 public abstract class LogicGate implements Drawable, Evaluable {
 	protected Point position;
 	protected Evaluable inputs[];
+	protected Image image;
 	protected int minInputs, maxInputs;
 
-	public LogicGate(Point position, Evaluable inputs[]) {
+	public LogicGate(Image image, Point position, Evaluable inputs[]) {
 		this.position = position;
+		this.image = image;
 		this.inputs = inputs;
 	}
 
