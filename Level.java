@@ -38,6 +38,8 @@ public class Level implements Drawable {
 		g.drawImage(imageSet.getBorder(), 0, 490, null);
 
 		if (levelMode == LevelMode.Construction) {
+			g.drawImage(imageSet.getSimulate(), 300, 500, null);
+
 			LevelData levelData = new LevelData(LevelMode.Construction, 0);
 
 			for (Wire wire : wires)
@@ -55,7 +57,7 @@ public class Level implements Drawable {
 			g.drawLine(500, 500, 500, 600);
 			g.drawLine(600, 500, 600, 600);
 			g.drawLine(700, 500, 700, 600);
-			g.drawString("Sim", 350, 550);
+			g.drawString("Sim", 340, 552);
 
 			toolbarAndGate.draw(g, levelData, mouseInfo, ignore1);
 			g.drawString("" + numAndGates, toolbarAndGate.getPosition().x, toolbarAndGate.getPosition().y);

@@ -6,12 +6,13 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ImageSet {
-	private final Image background, toolbar, border;
+	private final Image background, toolbar, border, simulate;
 
-	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl) throws IOException {
+	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl, String simulateUrl) throws IOException {
 		background = loadFromUrl(backgroundUrl);
 		toolbar = loadFromUrl(toolbarUrl);
 		border = loadFromUrl(borderUrl);
+		simulate = loadFromUrl(simulateUrl);
 	}
 
 	private Image loadFromUrl(String url) throws IOException {
@@ -24,6 +25,10 @@ public class ImageSet {
 
 	public Image getBorder() {
 		return border;
+	}
+
+	public Image getSimulate() {
+		return simulate;
 	}
 
 	public Image getToolbar() {
