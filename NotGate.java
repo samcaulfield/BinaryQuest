@@ -13,8 +13,7 @@ public class NotGate extends LogicGate {
 
 	@Override
 	public void draw(Graphics2D g, LevelData levelData, MouseInfo mouseInfo, LogicGate ignore) {
-		g.setColor(Color.BLACK);
-		g.drawLine(position.x - 39, position.y - 39, position.x - 39, position.y + 39);
+		g.drawImage(image, position.x - 39, position.y - 39, null);
 	}
 
 	@Override

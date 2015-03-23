@@ -21,7 +21,7 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 	{
 		this.currentDrawable = currentDrawable;
 		currentLevel = LevelDefinitions.nextLevel();
-		Timer timer = new Timer(20, this);
+		Timer timer = new Timer(15, this);
 		timer.start();
 		addMouseListener(this);
 		addMouseMotionListener(this);

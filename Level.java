@@ -14,7 +14,7 @@ public class Level implements Drawable {
 	private int timeIndex; /* Index into time array of signals in signal window. */
 
 	private final AndGate toolbarAndGate;
-	private final NotGate toolbarNotGate = new NotGate(null, new Point(750, 550), null);
+	private final NotGate toolbarNotGate;
 	private final OrGate toolbarOrGate;
 
 	private int simulationIndex; /* Temporal location in simulation mode. */
@@ -34,6 +34,7 @@ public class Level implements Drawable {
 
 		levelMode = LevelMode.Construction;
 		toolbarAndGate = new AndGate(imageSet.getAnd(), new Point(450, 550), null);
+		toolbarNotGate = new NotGate(imageSet.getNot(), new Point(750, 550), null);
 		toolbarOrGate = new OrGate(imageSet.getOr(), new Point(550, 550), null);
 	}
 
@@ -107,7 +108,7 @@ public class Level implements Drawable {
 							numOrGates--;
 						} else if (mouseInfo.getX() > 700 && mouseInfo.getY() > 500 && numNotGates > 0) {
 							System.out.println("Picked up NotGate");
-							carrying = new NotGate(null, new Point(mouseInfo.getX(), mouseInfo.getY()), null);
+							carrying = new NotGate(imageSet.getNot(), new Point(mouseInfo.getX(), mouseInfo.getY()), null);
 							numNotGates--;
 						} else if (mouseInfo.getX() > 300 && mouseInfo.getX() < 400 && mouseInfo.getY() > 500) {
 							boolean filled = true;
@@ -198,10 +199,12 @@ public class Level implements Drawable {
 			g.setColor(Color.DARK_GRAY);
 			for (int i = 2; i <= 5; i++)
 				g.drawLine(50 * i, 500, 50 * i, 600);
-			for (int i = 0; i < 3; i++) {
+			/* Signals. */
+			for (int i = 0; i < 3; i++) { /* For each row. */
 				if (signalIndex + i < signals.length) {
 					g.setColor(Color.RED);
-					for (int j = 0; j < 5; j++) {
+					SignalLevel previous = SignalLevel.Off;
+					for (int j = 0; j < 5; j++) { /* For each time slot. */
 						if (timeIndex + j < signals[i].getSignalLength()) {
 							SignalLevel signalLevel = signals[i].getSignalLevelAt(j);
 							if (signalLevel == SignalLevel.On) {
@@ -209,6 +212,9 @@ public class Level implements Drawable {
 							} else if (signalLevel == SignalLevel.Off) {
 								g.drawLine(50 + j * 50, 528 + i * 33, 100 + j * 50, 528 + i * 33);
 							}
+							if (previous != signalLevel)
+								g.drawLine(50 + j * 50, 505 + i * 33, 50 + j * 50, 528 + i * 33);
+							previous = signalLevel;
 						}
 					}
 				}
