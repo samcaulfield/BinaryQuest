@@ -14,7 +14,7 @@ public class LevelDefinitions
 
 		ImageSet standardImages = null;
 		try {
-			standardImages = new ImageSet("./background.png", "./toolbar.png", "./border.png", "./simulate.png", "./and.png");
+			standardImages = new ImageSet("./background.png", "./toolbar.png", "./border.png", "./simulate.png", "./and.png", "./or.png");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -56,8 +56,6 @@ public class LevelDefinitions
 			}, 1, 1, 1, 1);
 			break;
 		case 1:
-			Wire wire5 = null;
-
 			Signal signals[] = new Signal[] {
 				new Signal(SignalType.Input, new SignalLevel[] {
 					SignalLevel.Off, SignalLevel.Off, SignalLevel.Off, SignalLevel.Off,
@@ -76,10 +74,8 @@ public class LevelDefinitions
 				
 				new Signal(SignalType.Output, new SignalLevel[] {
 					SignalLevel.On, SignalLevel.Off, SignalLevel.On, SignalLevel.Off,
-					SignalLevel.On, SignalLevel.Off, SignalLevel.On, SignalLevel.Off
-				}, "D", new Point(725, 250), 25, new Evaluable[] {
-					wire5
-				})
+					SignalLevel.On, SignalLevel.Off, SignalLevel.On, SignalLevel.On
+				}, "D", new Point(725, 250), 25, null) /* this null to be set later */
 			};
 
 			Wire wire0 = new Wire(SignalLevel.Undefined, new Point[] {
@@ -124,10 +120,14 @@ public class LevelDefinitions
 				wire3, wire4
 			});
 
-			wire5 = new Wire(SignalLevel.Undefined, new Point[] {
+			Wire wire5 = new Wire(SignalLevel.Undefined, new Point[] {
 				new Point(600, 250), new Point(700, 250)
 			}, new Evaluable[] {
 				slot2
+			});
+
+			signals[3].setInputs(new Evaluable[] {
+				wire5
 			});
 
 			ret = new Level(standardImages, new Wire[] {

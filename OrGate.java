@@ -1,11 +1,10 @@
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 
-public class AndGate extends LogicGate {
+public class OrGate extends LogicGate {
 
-	public AndGate(Image image, Point position, Evaluable inputs[]) {
+	public OrGate(Image image, Point position, Evaluable inputs[]) {
 		super(image, position, inputs);
 		minInputs = 2;
 		maxInputs = Integer.MAX_VALUE;
@@ -18,13 +17,13 @@ public class AndGate extends LogicGate {
 
 	@Override
 	public SignalLevel evaluate(int arg) {
-		SignalLevel signalLevel = SignalLevel.On;
+		SignalLevel signalLevel = SignalLevel.Undefined;
 		for (Evaluable input : inputs) {
-			if (input.evaluate(arg) == SignalLevel.Off) {
-				if (signalLevel == SignalLevel.On)
-					signalLevel = signalLevel.Off;
-			} else if (input.evaluate(arg) == SignalLevel.Undefined)
-				signalLevel = signalLevel.Undefined;
+			SignalLevel inputSignal = input.evaluate(arg);
+			if (inputSignal == SignalLevel.On)
+				return SignalLevel.On;
+			else if (inputSignal == SignalLevel.Off)
+				signalLevel = SignalLevel.Off;
 		}
 		return signalLevel;
 	}

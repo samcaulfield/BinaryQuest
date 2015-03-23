@@ -20,6 +20,10 @@ public class Signal implements Drawable, Evaluable {
 		this.inputs = inputs;
 	}
 
+	public void setInputs(Evaluable inputs[]) {
+		this.inputs = inputs;
+	}
+
 	public String getName() {
 		return name;
 	}

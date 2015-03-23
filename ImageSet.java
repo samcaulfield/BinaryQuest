@@ -6,14 +6,16 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ImageSet {
-	private final Image background, toolbar, border, simulate, and;
+	private final Image background, toolbar, border, simulate, and, or;
 
-	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl, String simulateUrl, String andUrl) throws IOException {
+	public ImageSet(String backgroundUrl, String toolbarUrl, String borderUrl, String simulateUrl, String andUrl,
+		String orUrl) throws IOException {
 		background = loadFromUrl(backgroundUrl);
 		toolbar = loadFromUrl(toolbarUrl);
 		border = loadFromUrl(borderUrl);
 		simulate = loadFromUrl(simulateUrl);
 		and = loadFromUrl(andUrl);
+		or = loadFromUrl(orUrl);
 	}
 
 	private Image loadFromUrl(String url) throws IOException {
@@ -30,6 +32,10 @@ public class ImageSet {
 
 	public Image getBorder() {
 		return border;
+	}
+
+	public Image getOr() {
+		return or;
 	}
 
 	public Image getSimulate() {

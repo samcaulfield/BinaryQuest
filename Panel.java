@@ -61,7 +61,10 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 		} else if (currentDrawable instanceof Level) {
 			if (currentDrawable.finishedAnimation()) {
 				currentDrawable = currentLevel = LevelDefinitions.nextLevel();
-				levelNumber++;
+				if (currentLevel == null) { /* Finshed the game. */
+					currentDrawable = new EndScreen();
+				} else
+					levelNumber++;
 			}
 		}
 		repaint();
