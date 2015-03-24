@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -46,6 +47,7 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 		currentDrawable.draw(g2d, null, mouseInfo, null);
 		if (currentDrawable instanceof Level) {
 			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 36));
+			g2d.setColor(Color.BLACK);
 			g2d.drawString("Level: " + levelNumber, 650, 450);
 		}
 		if (mouseInfo != null)

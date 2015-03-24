@@ -10,6 +10,7 @@ public class Level implements Drawable {
 	private int numAndGates, numOrGates, numXorGates, numNotGates;
 	private LogicGate carrying;
 	private LevelMode levelMode;
+
 	private int signalIndex; /* Index into signal array to display in signal window. */
 	private int timeIndex; /* Index into time array of signals in signal window. */
 
@@ -18,9 +19,24 @@ public class Level implements Drawable {
 	private final OrGate toolbarOrGate;
 
 	private int simulationIndex; /* Temporal location in simulation mode. */
-	private int tick; /* Frame counter mod 100. */
+	private double tick; /* Frame counter mod 100. */
 	private boolean correct, tempCorrect;
 	private ImageSet imageSet;
+
+	/* fixed UI locations */
+	private final int toolbarUpperY = 500, toolbarLowerY = 600;
+
+	class SavedSignal {
+		SignalLevel signal[];
+		String name;
+
+		public SavedSignal(SignalLevel signal[], String name) {
+			this.signal = signal;
+			this.name = name;
+		}
+	}
+
+	SavedSignal savedOutputSignals[];
 
 	public Level(ImageSet imageSet, Wire wires[], Slot slots[], Signal signals[], int numAndGates, int numOrGates, int numXorGates, int numNotGates) {
 		this.imageSet = imageSet;
@@ -115,13 +131,9 @@ public class Level implements Drawable {
 							for (Slot slot : slots)
 								if (!slot.filled())
 									filled = false;
-							if (filled) {
-								levelMode = LevelMode.Simulation;
-								tick = simulationIndex = 0;
-								correct = false;
-								tempCorrect = true;
-								System.out.println("Changed to simulation mode.");
-							} else
+							if (filled)
+								switchToSimulationMode();
+							else
 								System.out.println("Could not change to simulation mode.");
 						}
 						/* clicks on slots - to remove gates perhaps */
@@ -152,13 +164,21 @@ public class Level implements Drawable {
 				slot.draw(g, levelData, mouseInfo, ignore1);
 			for (Wire wire : wires)
 				wire.draw(g, levelData, mouseInfo, ignore1);
-			for (Signal signal : signals)
+			for (Signal signal : signals) {
 				signal.draw(g, levelData, mouseInfo, ignore1);
+				String name = signal.getName();
+				for (SavedSignal saved : savedOutputSignals) {
+					if (saved.name == name) {
+						saved.signal[simulationIndex] = signal.evaluate(simulationIndex);
+					}
+				}
+			}
 
 			tick++;
-			if (tick >= 100) {
+			if (tick >= 50) {
 				for (Signal signal : signals) {
 					if (signal.isOutput()) {
+						SignalLevel level = signal.evaluate(simulationIndex);
 						if (!(signal.evaluate(simulationIndex) == signal.getSignalLevelAt(simulationIndex)))
 							tempCorrect = false;
 					}
@@ -169,7 +189,8 @@ public class Level implements Drawable {
 				simulationIndex++;
 			}
 			if (simulationIndex >= signals[0].getSignalLength()) {
-				levelMode = LevelMode.Construction;
+				if (!tempCorrect) /* Stay in sim mode if correct so no redraw before level change. */
+					levelMode = LevelMode.Construction;
 				System.out.println("Solution is " + tempCorrect);
 				correct = tempCorrect;
 			}
@@ -179,53 +200,117 @@ public class Level implements Drawable {
 		drawSignalWindow(g);
 	}
 
+	private void switchToSimulationMode() {
+		levelMode = LevelMode.Simulation;
+		tick = simulationIndex = 0;
+		correct = false;
+		tempCorrect = true;
+		System.out.println("Changed to simulation mode.");
+		int numOutputs = 0;
+		for (Signal signal : signals)
+			if (signal.isOutput())
+				numOutputs++;
+		savedOutputSignals = new SavedSignal[numOutputs];
+
+		int savedJ = 0;
+		for (int i = 0; i < numOutputs; i++) {
+			for (int j = savedJ; j < signals.length; j++) {
+				if (signals[j].isOutput()) {
+					savedJ = j + 1;
+					savedOutputSignals[i] = new SavedSignal(new SignalLevel[signals[0].getSignalLength()], signals[j].getName());
+				}
+			}
+		}
+	}
+
 	private void drawSignalWindow(Graphics2D g) {
-		/* Draw signal name column irrespective of level mode. */
+		/* draw column for signal name */
 		g.setColor(Color.BLACK);
-		g.drawLine(50, 500, 50, 600);
+		g.drawLine(50, toolbarUpperY, 50, toolbarLowerY);
 
-		int windowWidth = 0;
-		if (levelMode == LevelMode.Construction)
-			windowWidth = 300;
-		else if (levelMode == LevelMode.Simulation)
-			windowWidth = 800;
-
-		/* Horizontal dividing lines. */
-		g.drawLine(0, 533, windowWidth, 533);
-		g.drawLine(0, 566, windowWidth, 566);
-
+		/* figure out size of signal box given level mode */
+		int windowWidth = 0, numBoxes = 0;
 		if (levelMode == LevelMode.Construction) {
-			/* Vertical signal-over-time lines. */
-			g.setColor(Color.DARK_GRAY);
-			for (int i = 2; i <= 5; i++)
-				g.drawLine(50 * i, 500, 50 * i, 600);
-			/* Signals. */
-			for (int i = 0; i < 3; i++) { /* For each row. */
-				if (signalIndex + i < signals.length) {
-					g.setColor(Color.RED);
-					SignalLevel previous = SignalLevel.Off;
-					for (int j = 0; j < 5; j++) { /* For each time slot. */
-						if (timeIndex + j < signals[i].getSignalLength()) {
-							SignalLevel signalLevel = signals[i].getSignalLevelAt(j);
-							if (signalLevel == SignalLevel.On) {
-								g.drawLine(50 + j * 50, 505 + i * 33, 100 + j * 50, 505 + i * 33);
-							} else if (signalLevel == SignalLevel.Off) {
-								g.drawLine(50 + j * 50, 528 + i * 33, 100 + j * 50, 528 + i * 33);
-							}
-							if (previous != signalLevel)
-								g.drawLine(50 + j * 50, 505 + i * 33, 50 + j * 50, 528 + i * 33);
-							previous = signalLevel;
-						}
+			windowWidth = 300;
+			numBoxes = Math.min(signals[0].getSignalLength(), 5);
+		} else if (levelMode == LevelMode.Simulation) {
+			windowWidth = 800;
+			numBoxes = signals[0].getSignalLength();
+		}
+		int numSignals = Math.min(signals.length, 3);
+		int boxSize = (windowWidth - 50) / numBoxes;
+		int boxHeight = (toolbarLowerY - toolbarUpperY) / numSignals;
+
+		/* draw vertical (signal over time) lines */
+		for (int i = 1; i <= numBoxes; i++)
+			g.drawLine(50 + i * (windowWidth - 50) / numBoxes, toolbarUpperY, 50 + i * (windowWidth - 50) / numBoxes, toolbarLowerY);
+
+		for (int i = 0; i < numSignals; i++) {
+			int lineY = toolbarUpperY + (toolbarLowerY - toolbarUpperY) / numSignals * i + i;
+			g.drawLine(0, lineY, windowWidth, lineY);
+		}
+
+		for (int i = 0; i < numSignals; i++)
+			g.drawString(signals[i].getName(), 25, toolbarUpperY + (i + 1) * ((toolbarLowerY - toolbarUpperY) / numSignals));
+
+		int step = 9;
+		g.setColor(Color.RED);
+		for (int i = 0; i < numSignals; i++) {
+			SignalLevel previous = SignalLevel.Off;
+			for (int j = 0; j < numBoxes; j++) {
+				int x = 50 + j * boxSize;
+				SignalLevel level = signals[signalIndex + i].getSignalLevelAt(j);
+				if (previous != level)
+					g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+				previous = level;
+				if (level == SignalLevel.On)
+					g.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
+				else if (level == SignalLevel.Off)
+					g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
+			}
+		}
+
+		if (levelMode == LevelMode.Simulation) {
+			double scanX = 50 + simulationIndex * boxSize + (tick * boxSize / 50.0);
+			g.setColor(Color.YELLOW);
+			g.drawLine((int) scanX, toolbarUpperY, (int) scanX, toolbarLowerY);
+
+
+			for (int i = 0; i < numSignals; i++) {
+				for (int k = 0; k < savedOutputSignals.length; k++) {
+					SavedSignal saved = savedOutputSignals[k];
+					if (signals[i].getName() == saved.name) {
+
+			SignalLevel previous = SignalLevel.Off;
+			for (int j = 0; j < numBoxes; j++) {
+				int x = 50 + j * boxSize;
+				SignalLevel level = saved.signal[j];
+
+				if (level == SignalLevel.On) {
+					if (j == simulationIndex)
+						g.drawLine(x, toolbarUpperY + boxHeight * i + step, (int) scanX, toolbarUpperY + boxHeight * i + step);
+					else
+						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
+					if (previous != level)
+						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+				} else if (level == SignalLevel.Off) {
+					if (j == simulationIndex)
+						g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, (int) scanX, toolbarUpperY + boxHeight * (i + 1) - step);
+					else
+						g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
+					if (previous != level)
+						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+
+				}
+				previous = level;
+			}
+
+
+
 					}
 				}
 			}
 		}
-
-		g.setColor(Color.BLACK);
-		g.drawString(signals[signalIndex].getName(), 0, 515);
-		g.drawString(signals[signalIndex + 1].getName(), 0, 548);
-		if (signals.length > 2)
-			g.drawString(signals[signalIndex + 2].getName(), 0, 566);
 	}
 
 	@Override

@@ -16,6 +16,10 @@ public class Slot implements Drawable, Evaluable, Bounded {
 		this.inputs = inputs;
 	}
 
+	public void setInputs(Evaluable inputs[]) {
+		this.inputs = inputs;
+	}
+
 	public boolean filled() {
 		return gate != null;
 	}

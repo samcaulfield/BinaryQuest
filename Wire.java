@@ -63,5 +63,9 @@ public class Wire implements Evaluable, Drawable {
 		}
 		return signalLevel;
 	}
+
+	public void setInputs(Evaluable inputs[]) {
+		this.inputs = inputs;
+	}
 }
 
