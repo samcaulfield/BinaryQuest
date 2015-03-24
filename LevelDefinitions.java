@@ -21,7 +21,7 @@ public class LevelDefinitions
 		}
 
 		switch (level) {
-		case 0:
+		case 0: {
 			Signal a = new Signal(SignalType.Input, new SignalLevel[] {
 				SignalLevel.Off, SignalLevel.On
 			}, "A", new Point(75, 250), 25, null);
@@ -55,8 +55,9 @@ public class LevelDefinitions
 			}, new Signal[] {
 				a, b
 			}, 1, 1, 1, 1);
+		}
 			break;
-		case 1:
+		case 2: {
 			Signal signals[] = new Signal[] {
 				new Signal(SignalType.Input, new SignalLevel[] {
 					SignalLevel.Off, SignalLevel.Off, SignalLevel.Off, SignalLevel.Off,
@@ -136,6 +137,56 @@ public class LevelDefinitions
 			}, new Slot[] {
 				slot0, slot1, slot2
 			}, signals, 1, 1, 1, 1);
+		}
+			break;
+		case 1: {
+			Signal signals[] = new Signal[] {
+				new Signal(SignalType.Input, new SignalLevel[] {
+					SignalLevel.Off, SignalLevel.Off, SignalLevel.On, SignalLevel.On
+				}, "A", new Point(75, 150), 25, null),
+
+				new Signal(SignalType.Input, new SignalLevel[] {
+					SignalLevel.Off, SignalLevel.On, SignalLevel.Off, SignalLevel.On
+				}, "B", new Point(75, 350), 25, null),
+
+				new Signal(SignalType.Output, new SignalLevel[] {
+					SignalLevel.Off, SignalLevel.Off, SignalLevel.Off, SignalLevel.On
+				}, "C", new Point(725, 250), 25, null)
+			};
+
+			Wire[] wires = new Wire[] {
+				new Wire(SignalLevel.Undefined, new Point[] {
+					new Point(100, 150), new Point(225, 150), new Point(225, 220), new Point(350, 220)
+				}, new Evaluable[] {
+					signals[0]
+				}),
+
+				new Wire(SignalLevel.Undefined, new Point[] {
+					new Point(100, 350), new Point(225, 350), new Point(225, 280), new Point(350, 280)
+				}, new Evaluable[] {
+					signals[1]
+				}),
+
+				new Wire(SignalLevel.Undefined, new Point[] {
+					new Point(450, 250), new Point(700, 250)
+				}, null)
+			};
+
+			Slot[] slots = new Slot[] {
+				new Slot(100, new Point(400, 250), null, new Evaluable[] {
+					wires[0], wires[1]
+				})
+			};
+
+			wires[2].setInputs(new Evaluable[] {
+				slots[0]
+			});
+			signals[2].setInputs(new Evaluable[] {
+				wires[2]
+			});
+
+			ret = new Level(standardImages, wires, slots, signals, 1, 1, 1, 1);
+		}
 			break;
 		}
 
