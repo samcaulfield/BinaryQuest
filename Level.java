@@ -60,10 +60,10 @@ public class Level implements Drawable {
 		g.drawImage(imageSet.getToolbar(), 0, 500, null);
 		g.drawImage(imageSet.getBorder(), 0, 490, null);
 
-		if (levelMode == LevelMode.Construction) {
-			g.drawImage(imageSet.getSimulate(), 300, 500, null);
+		LevelData levelData = null;
 
-			LevelData levelData = new LevelData(LevelMode.Construction, 0);
+		if (levelMode == LevelMode.Construction) {
+			levelData = new LevelData(LevelMode.Construction, 0);
 
 			for (Wire wire : wires)
 				wire.draw(g, levelData, mouseInfo, ignore1);
@@ -71,6 +71,8 @@ public class Level implements Drawable {
 				slot.draw(g, levelData, mouseInfo, carrying);
 			for (Signal signal : signals)
 				signal.draw(g, levelData, mouseInfo, ignore1);
+
+			g.drawImage(imageSet.getSimulate(), 300, 500, null);
 
 			/* Draw toolbar. */
 			g.setColor(Color.BLACK);
@@ -98,8 +100,20 @@ public class Level implements Drawable {
 						boolean gatePutInSlot = false;
 						for (Slot slot : slots)
 							if (slot.inBounds(mouseInfo.getX(), mouseInfo.getY()))
-								if (slot.canAccept(carrying))
+								if (slot.canAccept(carrying)) {
+									LogicGate gate = slot.getGate();
+									if (gate != null) {
+										if (gate instanceof AndGate)
+											numAndGates++;
+										else if (gate instanceof NotGate)
+											numNotGates++;
+										else if (gate instanceof OrGate)
+											numOrGates++;
+									}
+									slot.setGate(carrying);
+									slot.draw(g, levelData, mouseInfo, ignore1);
 									gatePutInSlot = true;
+								}
 
 						if (!gatePutInSlot) {
 							if (carrying instanceof AndGate)
@@ -159,7 +173,7 @@ public class Level implements Drawable {
 			if (carrying != null)
 				carrying.draw(g, levelData, mouseInfo, ignore1);
 		} else if (levelMode == LevelMode.Simulation) {
-			LevelData levelData = new LevelData(LevelMode.Simulation, simulationIndex);
+			levelData = new LevelData(LevelMode.Simulation, simulationIndex);
 			for (Slot slot : slots)
 				slot.draw(g, levelData, mouseInfo, ignore1);
 			for (Wire wire : wires)
@@ -281,29 +295,29 @@ public class Level implements Drawable {
 					SavedSignal saved = savedOutputSignals[k];
 					if (signals[i].getName() == saved.name) {
 
-			SignalLevel previous = SignalLevel.Off;
-			for (int j = 0; j < numBoxes; j++) {
-				int x = 50 + j * boxSize;
-				SignalLevel level = saved.signal[j];
+					SignalLevel previous = SignalLevel.Off;
+					for (int j = 0; j < numBoxes; j++) {
+						int x = 50 + j * boxSize;
+						SignalLevel level = saved.signal[j];
 
-				if (level == SignalLevel.On) {
-					if (j == simulationIndex)
-						g.drawLine(x, toolbarUpperY + boxHeight * i + step, (int) scanX, toolbarUpperY + boxHeight * i + step);
-					else
-						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
-					if (previous != level)
-						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
-				} else if (level == SignalLevel.Off) {
-					if (j == simulationIndex)
-						g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, (int) scanX, toolbarUpperY + boxHeight * (i + 1) - step);
-					else
-						g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
-					if (previous != level)
-						g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+						if (level == SignalLevel.On) {
+							if (j == simulationIndex)
+								g.drawLine(x, toolbarUpperY + boxHeight * i + step, (int) scanX, toolbarUpperY + boxHeight * i + step);
+							else
+								g.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
+							if (previous != level)
+								g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+						} else if (level == SignalLevel.Off) {
+							if (j == simulationIndex)
+								g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, (int) scanX, toolbarUpperY + boxHeight * (i + 1) - step);
+							else
+								g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
+							if (previous != level)
+								g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
 
-				}
-				previous = level;
-			}
+						}
+						previous = level;
+					}
 
 
 

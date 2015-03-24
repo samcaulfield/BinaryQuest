@@ -49,11 +49,13 @@ public class Slot implements Drawable, Evaluable, Bounded {
 
 		/* Door animation */
 		if (mouseInfo != null) {
+			/*
 			if (inBounds(mouseInfo.getX(), mouseInfo.getY()) && mouseInfo.clicked())
 				if (animationIndex == size && canAccept(logicGate)) {
-					gate = logicGate; /* might need to copy */
+					gate = logicGate;
 					gate.setInputs(inputs);
 				}
+			*/
 
 			if (inBounds(mouseInfo.getX(), mouseInfo.getY()) && logicGate != null && matchingGate(logicGate)) {
 				animationIndex++;
@@ -72,6 +74,11 @@ public class Slot implements Drawable, Evaluable, Bounded {
 		g.drawLine(position.x - size / 2 + animationIndex, position.y - size / 2, position.x - size / 2 + animationIndex, position.y + size / 2);
 		if (gate != null)
 			gate.draw(g, levelData, mouseInfo, null);
+	}
+
+	public void setGate(LogicGate gate) {
+		this.gate = gate;
+		gate.setInputs(inputs);
 	}
 
 	@Override
