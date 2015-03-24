@@ -41,7 +41,7 @@ public class Signal implements Drawable, Evaluable {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, MouseInfo mouseInfo, LogicGate ignore) {
+	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
 		switch (levelData.getLevelMode()) {
 		case Construction:
 			g.setColor(Color.YELLOW);

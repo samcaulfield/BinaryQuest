@@ -43,37 +43,27 @@ public class Slot implements Drawable, Evaluable, Bounded {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, MouseInfo mouseInfo, LogicGate logicGate) {
+	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate logicGate) {
 		g.setColor(Color.BLACK);
 		g.drawRect(position.x - size / 2, position.y - size / 2, size, size);
 
 		/* Door animation */
-		if (mouseInfo != null) {
-			/*
-			if (inBounds(mouseInfo.getX(), mouseInfo.getY()) && mouseInfo.clicked())
-				if (animationIndex == size && canAccept(logicGate)) {
-					gate = logicGate;
-					gate.setInputs(inputs);
-				}
-			*/
-
-			if (inBounds(mouseInfo.getX(), mouseInfo.getY()) && logicGate != null && matchingGate(logicGate)) {
-				animationIndex++;
-				if (animationIndex > size)
-					animationIndex = size;
-			} else {
-				if (gate == null) { /* Don't close if gate in slot */
-					animationIndex--;
-					if (animationIndex < 0)
-						animationIndex = 0;
-				}
+		if (inBounds(inputInfo.getX(), inputInfo.getY()) && logicGate != null && matchingGate(logicGate)) {
+			animationIndex++;
+			if (animationIndex > size)
+				animationIndex = size;
+		} else {
+			if (gate == null) { /* Don't close if gate in slot */
+				animationIndex--;
+				if (animationIndex < 0)
+					animationIndex = 0;
 			}
 		}
 
 		g.setColor(Color.RED);
 		g.drawLine(position.x - size / 2 + animationIndex, position.y - size / 2, position.x - size / 2 + animationIndex, position.y + size / 2);
 		if (gate != null)
-			gate.draw(g, levelData, mouseInfo, null);
+			gate.draw(g, levelData, inputInfo, null);
 	}
 
 	public void setGate(LogicGate gate) {

@@ -12,7 +12,7 @@ public class AndGate extends LogicGate {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, MouseInfo mouseInfo, LogicGate ignore) {
+	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
 		g.drawImage(image, position.x - 39, position.y - 39, null);
 	}
 

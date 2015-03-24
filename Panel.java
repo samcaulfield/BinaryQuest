@@ -1,5 +1,7 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -11,22 +13,25 @@ import java.awt.event.MouseListener;
 import java.awt.Point;
 import javax.swing.Timer;
 
-public class Panel extends JPanel implements MouseListener, ActionListener, MouseMotionListener
+public class Panel extends JPanel implements MouseListener, ActionListener, MouseMotionListener, KeyListener
 {
 	private Drawable currentDrawable;
 	private Level currentLevel;
-	private MouseInfo mouseInfo;
+	private InputInfo inputInfo;
 	private int levelNumber;
 
 	public Panel(Drawable currentDrawable)
 	{
+		setFocusable(true); /* needed to detect key pressed */
 		this.currentDrawable = currentDrawable;
 		currentLevel = LevelDefinitions.nextLevel();
 		Timer timer = new Timer(15, this);
 		timer.start();
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addKeyListener(this);
 		levelNumber = 0;
+		inputInfo = new InputInfo(-1, -1, false, '\0');
 	}
 
 	public Drawable getCurrentDrawable()
@@ -44,14 +49,13 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 	{
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
-		currentDrawable.draw(g2d, null, mouseInfo, null);
+		currentDrawable.draw(g2d, null, inputInfo, null);
 		if (currentDrawable instanceof Level) {
 			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 36));
 			g2d.setColor(Color.BLACK);
 			g2d.drawString("Level: " + levelNumber, 650, 450);
 		}
-		if (mouseInfo != null)
-			mouseInfo.setClicked(false); /* Keep position data but unset click flag */
+		inputInfo.setClicked(false); /* Keep position data but unset click flag */
 	}
 
 	@Override
@@ -72,16 +76,27 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 		repaint();
 	}
 
+	public void keyPressed(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {}
+
 	@Override
-	public void mouseMoved(MouseEvent e)
-	{
-		mouseInfo = new MouseInfo(new Point(e.getX(), e.getY()), false);
+	public void keyReleased(KeyEvent e) {
+		inputInfo.setKey(e.getKeyChar());
+		System.out.println("Released key " + e.getKeyChar());
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e)
-	{
-		mouseInfo = new MouseInfo(new Point(e.getX(), e.getY()), true);
+	public void mouseMoved(MouseEvent e) {
+		inputInfo.setX(e.getX());
+		inputInfo.setY(e.getY());
+		inputInfo.setClicked(false);
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		inputInfo.setX(e.getX());
+		inputInfo.setY(e.getY());
+		inputInfo.setClicked(true);
 	}
 
 	public void mouseDragged(MouseEvent e){}

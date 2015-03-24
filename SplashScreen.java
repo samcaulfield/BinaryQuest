@@ -13,7 +13,7 @@ public class SplashScreen implements Drawable
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData ignore, MouseInfo mouseInfo, LogicGate ignoreToo)
+	public void draw(Graphics2D g, LevelData ignore, InputInfo inputInfo, LogicGate ignoreToo)
 	{
 		g.drawString("Binary Quest " + animationIndex, 400, 300);
 		animationIndex++;
