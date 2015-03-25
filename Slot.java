@@ -43,9 +43,9 @@ public class Slot implements Drawable, Evaluable, Bounded {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate logicGate) {
-		g.setColor(Color.BLACK);
-		g.drawRect(position.x - size / 2, position.y - size / 2, size, size);
+	public void draw(Renderer renderer, LevelData levelData, InputInfo inputInfo, LogicGate logicGate) {
+		renderer.setColor(Color.BLACK);
+		renderer.drawRect(position.x - size / 2, position.y - size / 2, size, size);
 
 		/* Door animation */
 		if (inBounds(inputInfo.getX(), inputInfo.getY()) && logicGate != null && matchingGate(logicGate)) {
@@ -60,10 +60,10 @@ public class Slot implements Drawable, Evaluable, Bounded {
 			}
 		}
 
-		g.setColor(Color.RED);
-		g.drawLine(position.x - size / 2 + animationIndex, position.y - size / 2, position.x - size / 2 + animationIndex, position.y + size / 2);
+		renderer.setColor(Color.RED);
+		renderer.drawLine(position.x - size / 2 + animationIndex, position.y - size / 2, position.x - size / 2 + animationIndex, position.y + size / 2);
 		if (gate != null)
-			gate.draw(g, levelData, inputInfo, null);
+			gate.draw(renderer, levelData, inputInfo, null);
 	}
 
 	public void setGate(LogicGate gate) {

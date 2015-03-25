@@ -55,10 +55,10 @@ public class Level implements Drawable {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData ignore0, InputInfo inputInfo, LogicGate ignore1) {
-		g.drawImage(imageSet.getBackground(), 0, 0, null);
-		g.drawImage(imageSet.getToolbar(), 0, 500, null);
-		g.drawImage(imageSet.getBorder(), 0, 490, null);
+	public void draw(Renderer renderer, LevelData ignore0, InputInfo inputInfo, LogicGate ignore1) {
+		renderer.drawImage(imageSet.getBackground(), 0, 0);
+		renderer.drawImage(imageSet.getToolbar(), 0, 500);
+		renderer.drawImage(imageSet.getBorder(), 0, 490);
 
 		LevelData levelData = null;
 
@@ -82,32 +82,32 @@ public class Level implements Drawable {
 			levelData = new LevelData(LevelMode.Construction, 0);
 
 			for (Wire wire : wires)
-				wire.draw(g, levelData, inputInfo, ignore1);
+				wire.draw(renderer, levelData, inputInfo, ignore1);
 			for (Slot slot : slots)
-				slot.draw(g, levelData, inputInfo, carrying);
+				slot.draw(renderer, levelData, inputInfo, carrying);
 			for (Signal signal : signals)
-				signal.draw(g, levelData, inputInfo, ignore1);
+				signal.draw(renderer, levelData, inputInfo, ignore1);
 
-			g.drawImage(imageSet.getSimulate(), 300, 500, null);
+			renderer.drawImage(imageSet.getSimulate(), 300, 500);
 
 			/* Draw toolbar. */
-			g.setColor(Color.BLACK);
-			g.drawLine(0, 500, 800, 500);
-			g.drawLine(300, 500, 300, 600);
-			g.drawLine(400, 500, 400, 600);
-			g.drawLine(500, 500, 500, 600);
-			g.drawLine(600, 500, 600, 600);
-			g.drawLine(700, 500, 700, 600);
-			g.drawString("Sim", 340, 552);
+			renderer.setColor(Color.BLACK);
+			renderer.drawLine(0, 500, 800, 500);
+			renderer.drawLine(300, 500, 300, 600);
+			renderer.drawLine(400, 500, 400, 600);
+			renderer.drawLine(500, 500, 500, 600);
+			renderer.drawLine(600, 500, 600, 600);
+			renderer.drawLine(700, 500, 700, 600);
+			renderer.drawString("Sim", 340, 552);
 
-			toolbarAndGate.draw(g, levelData, inputInfo, ignore1);
-			g.drawString("" + numAndGates, toolbarAndGate.getPosition().x, toolbarAndGate.getPosition().y);
+			toolbarAndGate.draw(renderer, levelData, inputInfo, ignore1);
+			renderer.drawString("" + numAndGates, toolbarAndGate.getPosition().x, toolbarAndGate.getPosition().y);
 
-			toolbarNotGate.draw(g, levelData, inputInfo, ignore1);
-			g.drawString("" + numNotGates, toolbarNotGate.getPosition().x, toolbarNotGate.getPosition().y);
+			toolbarNotGate.draw(renderer, levelData, inputInfo, ignore1);
+			renderer.drawString("" + numNotGates, toolbarNotGate.getPosition().x, toolbarNotGate.getPosition().y);
 
-			toolbarOrGate.draw(g, levelData, inputInfo, ignore1);
-			g.drawString("" + numOrGates, toolbarOrGate.getPosition().x, toolbarOrGate.getPosition().y);
+			toolbarOrGate.draw(renderer, levelData, inputInfo, ignore1);
+			renderer.drawString("" + numOrGates, toolbarOrGate.getPosition().x, toolbarOrGate.getPosition().y);
 
 			/* Logic for current gate being carried. */
 			if (inputInfo.isClicked()) {
@@ -126,7 +126,7 @@ public class Level implements Drawable {
 										numOrGates++;
 								}
 								slot.setGate(carrying);
-								slot.draw(g, levelData, inputInfo, ignore1);
+								slot.draw(renderer, levelData, inputInfo, ignore1);
 								gatePutInSlot = true;
 							}
 
@@ -185,15 +185,15 @@ public class Level implements Drawable {
 				carrying.setPosition(inputInfo.getX(), inputInfo.getY());
 
 			if (carrying != null)
-				carrying.draw(g, levelData, inputInfo, ignore1);
+				carrying.draw(renderer, levelData, inputInfo, ignore1);
 		} else if (levelMode == LevelMode.Simulation) {
 			levelData = new LevelData(LevelMode.Simulation, simulationIndex);
 			for (Slot slot : slots)
-				slot.draw(g, levelData, inputInfo, ignore1);
+				slot.draw(renderer, levelData, inputInfo, ignore1);
 			for (Wire wire : wires)
-				wire.draw(g, levelData, inputInfo, ignore1);
+				wire.draw(renderer, levelData, inputInfo, ignore1);
 			for (Signal signal : signals) {
-				signal.draw(g, levelData, inputInfo, ignore1);
+				signal.draw(renderer, levelData, inputInfo, ignore1);
 				String name = signal.getName();
 				for (SavedSignal saved : savedOutputSignals) {
 					if (saved.name == name) {
@@ -225,7 +225,7 @@ public class Level implements Drawable {
 
 		}
 
-		drawSignalWindow(g);
+		drawSignalWindow(renderer);
 	}
 
 	private void switchToSimulationMode() {
@@ -251,10 +251,10 @@ public class Level implements Drawable {
 		}
 	}
 
-	private void drawSignalWindow(Graphics2D g) {
+	private void drawSignalWindow(Renderer renderer) {
 		/* draw column for signal name */
-		g.setColor(Color.BLACK);
-		g.drawLine(50, toolbarUpperY, 50, toolbarLowerY);
+		renderer.setColor(Color.BLACK);
+		renderer.drawLine(50, toolbarUpperY, 50, toolbarLowerY);
 
 		/* figure out size of signal box given level mode */
 		int windowWidth = 0, numBoxes = 0;
@@ -266,42 +266,42 @@ public class Level implements Drawable {
 			numBoxes = signals[0].getSignalLength();
 		}
 		int numSignals = Math.min(signals.length, 3);
-		int boxSize = (windowWidth - 50) / numBoxes;
-		int boxHeight = (toolbarLowerY - toolbarUpperY) / numSignals;
+		double boxSize = (windowWidth - 50.0) / numBoxes;
+		double boxHeight = (toolbarLowerY - toolbarUpperY) / numSignals;
 
 		/* draw vertical (signal over time) lines */
 		for (int i = 1; i <= numBoxes; i++)
-			g.drawLine(50 + i * (windowWidth - 50) / numBoxes, toolbarUpperY, 50 + i * (windowWidth - 50) / numBoxes, toolbarLowerY);
+			renderer.drawLine(50 + i * (windowWidth - 50) / numBoxes, toolbarUpperY, 50 + i * (windowWidth - 50) / numBoxes, toolbarLowerY);
 
 		for (int i = 0; i < numSignals; i++) {
 			int lineY = toolbarUpperY + (toolbarLowerY - toolbarUpperY) / numSignals * i + i;
-			g.drawLine(0, lineY, windowWidth, lineY);
+			renderer.drawLine(0, lineY, windowWidth, lineY);
 		}
 
 		for (int i = signalIndex; i < signalIndex + numSignals; i++)
-			g.drawString(signals[i].getName(), 25, toolbarUpperY + (i - signalIndex + 1) * ((toolbarLowerY - toolbarUpperY) / numSignals));
+			renderer.drawString(signals[i].getName(), 25, toolbarUpperY + (i - signalIndex + 1) * ((toolbarLowerY - toolbarUpperY) / numSignals));
 
 		int step = 9;
-		g.setColor(Color.RED);
+		renderer.setColor(Color.RED);
 		for (int i = 0; i < numSignals; i++) {
 			SignalLevel previous = SignalLevel.Off;
 			for (int j = 0; j < numBoxes; j++) {
-				int x = 50 + j * boxSize;
+				double x = 50 + j * boxSize;
 				SignalLevel level = signals[signalIndex + i].getSignalLevelAt(j);
 				if (previous != level)
-					g.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
+					renderer.drawLine(x, toolbarUpperY + boxHeight * i + step, x, toolbarUpperY + boxHeight * (i + 1) - step);
 				previous = level;
 				if (level == SignalLevel.On)
-					g.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
+					renderer.drawLine(x, toolbarUpperY + boxHeight * i + step, x + boxSize, toolbarUpperY + boxHeight * i + step);
 				else if (level == SignalLevel.Off)
-					g.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
+					renderer.drawLine(x, toolbarUpperY + boxHeight * (i + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (i + 1) - step);
 			}
 		}
 
 		if (levelMode == LevelMode.Simulation) {
 			double scanX = 50 + simulationIndex * boxSize + (tick * boxSize / 50.0);
-			g.setColor(Color.YELLOW);
-			g.drawLine((int) scanX, toolbarUpperY, (int) scanX, toolbarLowerY);
+			renderer.setColor(Color.YELLOW);
+			renderer.drawLine((int) scanX, toolbarUpperY, (int) scanX, toolbarLowerY);
 
 
 			for (int i = signalIndex; i < signalIndex + numSignals; i++) {
@@ -311,25 +311,25 @@ public class Level implements Drawable {
 
 	SignalLevel previous = SignalLevel.Off;
 	for (int j = 0; j < numBoxes; j++) {
-		int x = 50 + j * boxSize;
+		double x = 50 + j * boxSize;
 		SignalLevel level = saved.signal[j];
 
 		int newi = i - signalIndex;
 
 		if (level == SignalLevel.On) {
 			if (j == simulationIndex)
-				g.drawLine(x, toolbarUpperY + boxHeight * newi + step, (int) scanX, toolbarUpperY + boxHeight * newi + step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * newi + step, (int) scanX, toolbarUpperY + boxHeight * newi + step);
 			else
-				g.drawLine(x, toolbarUpperY + boxHeight * newi + step, x + boxSize, toolbarUpperY + boxHeight * newi + step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * newi + step, x + boxSize, toolbarUpperY + boxHeight * newi + step);
 			if (previous != level)
-				g.drawLine(x, toolbarUpperY + boxHeight * newi + step, x, toolbarUpperY + boxHeight * (newi + 1) - step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * newi + step, x, toolbarUpperY + boxHeight * (newi + 1) - step);
 		} else if (level == SignalLevel.Off) {
 			if (j == simulationIndex)
-				g.drawLine(x, toolbarUpperY + boxHeight * (newi + 1) - step, (int) scanX, toolbarUpperY + boxHeight * (newi + 1) - step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * (newi + 1) - step, (int) scanX, toolbarUpperY + boxHeight * (newi + 1) - step);
 			else
-				g.drawLine(x, toolbarUpperY + boxHeight * (newi + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (newi + 1) - step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * (newi + 1) - step, x + boxSize, toolbarUpperY + boxHeight * (newi + 1) - step);
 			if (previous != level)
-				g.drawLine(x, toolbarUpperY + boxHeight * newi + step, x, toolbarUpperY + boxHeight * (newi + 1) - step);
+				renderer.drawLine(x, toolbarUpperY + boxHeight * newi + step, x, toolbarUpperY + boxHeight * (newi + 1) - step);
 
 		}
 		previous = level;

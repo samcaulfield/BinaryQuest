@@ -19,6 +19,7 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 	private Level currentLevel;
 	private InputInfo inputInfo;
 	private int levelNumber;
+	private Renderer renderer;
 
 	public Panel(Drawable currentDrawable)
 	{
@@ -32,6 +33,7 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 		addKeyListener(this);
 		levelNumber = 0;
 		inputInfo = new InputInfo(-1, -1, false, '\0');
+		renderer = new SwingRenderer();
 	}
 
 	public Drawable getCurrentDrawable()
@@ -49,11 +51,14 @@ public class Panel extends JPanel implements MouseListener, ActionListener, Mous
 	{
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
-		currentDrawable.draw(g2d, null, inputInfo, null);
+
+		((SwingRenderer) renderer).setGraphics2D(g2d);
+
+		currentDrawable.draw(renderer, null, inputInfo, null);
 		if (currentDrawable instanceof Level) {
-			g2d.setFont(new Font("TimesRoman", Font.PLAIN, 36));
-			g2d.setColor(Color.BLACK);
-			g2d.drawString("Level: " + levelNumber, 650, 450);
+			renderer.setFont(new Font("TimesRoman", Font.PLAIN, 36));
+			renderer.setColor(Color.BLACK);
+			renderer.drawString("Level: " + levelNumber, 650, 450);
 		}
 		inputInfo.setClicked(false); /* Keep position data but unset click flag */
 	}

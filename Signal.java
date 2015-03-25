@@ -41,10 +41,10 @@ public class Signal implements Drawable, Evaluable {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
+	public void draw(Renderer renderer, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
 		switch (levelData.getLevelMode()) {
 		case Construction:
-			g.setColor(Color.YELLOW);
+			renderer.setColor(Color.YELLOW);
 			break;
 		case Simulation:
 			SignalLevel signalLevel = SignalLevel.Undefined;
@@ -55,20 +55,20 @@ public class Signal implements Drawable, Evaluable {
 
 			switch (signalLevel) {
 				case On:
-					g.setColor(Color.GREEN);
+					renderer.setColor(Color.GREEN);
 					break;
 				case Off:
-					g.setColor(Color.RED);
+					renderer.setColor(Color.RED);
 					break;
 				case Undefined:
-					g.setColor(Color.YELLOW);
+					renderer.setColor(Color.YELLOW);
 					break;
 			}
 			break;
 		}
 
-		g.drawOval(position.x - radius, position.y - radius, 2 * radius, 2 * radius);
-		g.drawString(name, position.x, position.y);
+		renderer.drawCircle(position.x - radius, position.y - radius, radius);
+		renderer.drawString(name, position.x, position.y);
 	}
 
 	@Override

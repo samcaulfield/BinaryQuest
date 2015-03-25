@@ -14,28 +14,28 @@ public class Wire implements Evaluable, Drawable {
 	}
 
 	@Override
-	public void draw(Graphics2D g, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
+	public void draw(Renderer renderer, LevelData levelData, InputInfo inputInfo, LogicGate ignore) {
 		switch (levelData.getLevelMode()) {
 		case Construction:
-			g.setColor(Color.YELLOW);
+			renderer.setColor(Color.YELLOW);
 			break;
 		case Simulation:
 			signalLevel = evaluate(levelData.getLevelIndex());
 			switch (signalLevel) {
 			case On:
-				g.setColor(Color.GREEN);
+				renderer.setColor(Color.GREEN);
 				break;
 			case Off:
-				g.setColor(Color.RED);
+				renderer.setColor(Color.RED);
 				break;
 			case Undefined:
-				g.setColor(Color.YELLOW);
+				renderer.setColor(Color.YELLOW);
 				break;
 			}
 		}
 
 		for (int i = 0; i + 1 < wayPoints.length; i++)
-			g.drawLine(wayPoints[i].x, wayPoints[i].y, wayPoints[i + 1].x,
+			renderer.drawLine(wayPoints[i].x, wayPoints[i].y, wayPoints[i + 1].x,
 				wayPoints[i + 1].y);
 	}
 
